@@ -1,6 +1,6 @@
 import pathlib
-from setuptools import find_packages, setup
 
+from setuptools import find_packages, setup
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -18,8 +18,9 @@ setup(
     long_description_content_type="text/markdown",
     author="sukhbinder",
     author_email="sukh2010@yahoo.com",
-    url = 'https://github.com/sukhbinder/tidiwiki',
-    keywords = ["tidiwiki", "TiddlyWiki", "convertor", "pdf", "Marvin", "Calibre"],
+    url='https://github.com/sukhbinder/tidiwiki',
+    keywords=["tidiwiki", "TiddlyWiki",
+              "convertor", "pdf", "Marvin", "Calibre"],
     entry_points={
         'console_scripts': ['to_wiki = tidiwiki.write_tidiwiki:main', ],
     },
