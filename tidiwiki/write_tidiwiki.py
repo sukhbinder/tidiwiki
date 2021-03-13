@@ -23,7 +23,6 @@ def get_tag(ll):
 def clean_text(ll):
     ll = ll.replace("Ò", " ").replace("Õ", "'").replace(
         "Ñ", " ").replace("Ó", " ").replace("Þ", "fi").replace("ß", "fl")
-    # ll = ll.replace("Cromwell", "").replace("Road", "").replace("DE23 6TR","").replace("Derby"," ")
     return ll
 
 
