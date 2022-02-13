@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 from datetime import datetime
+from bs4 import BeautifulSoup
 
 import PyPDF2
 
@@ -103,16 +104,39 @@ def convert_markdown_file(fname, output="tt.json", tag="Not_provided"):
     pages = rawdata.split(findstr)
 
     dd = []
-    data = get_title_page(pages[0], tag0=tag, title=tag)
+    data = get_title_page(None, tag0=tag, title=tag)
     dd.append(data)
-    for page in pages:
+    for i, page in enumerate(pages, 1):
         if page:
             # page_as = page.encode("ascii", "ignore")
             page_as = page
             # title = " ".join(page_as.split()[:8])
-            title = page_as[:50]
+            title = "{0}_{1}".format(i, page_as[:50])
             text = page_as
             data = dict(created=getNowtime(), tags=tag, title=title, text=text)
+            dd.append(data)
+
+    write_json(output, dd)
+
+
+def convert_kindle_file(fname, output="kindle_export.json"):
+    with open(fname) as fin:
+        data = fin.read()
+    soup = BeautifulSoup(data, "html.parser")
+    title = soup.find(class_="bookTitle").text.strip()
+    booktag = title.replace(" ", "_")
+    pages = soup.find_all(class_="noteText")
+
+    dd = []
+    data = get_title_page(pages[0], tag0=booktag, title=title)
+    dd.append(data)
+    for i, page in enumerate(pages, 1):
+        if page:
+            page_as = page.text.strip()
+            title = "{0}_{1}".format(i, page_as[:50])
+            text = page_as
+            data = dict(created=getNowtime(), tags=booktag,
+                        title=title, text=text)
             dd.append(data)
 
     write_json(output, dd)
@@ -125,6 +149,8 @@ def main():
     parser.add_argument("-o", "--out", type=str, default=None)
     parser.add_argument("-m", "--mark", action="store_true",
                         help="If provided, Calibre markdown is assumed")
+    parser.add_argument("-k", "--kindle", action="store_true",
+                        help="If provided, Kindle export is assumed")
     parser.add_argument("-t", "--tag", type=str, default=None)
 
     args = parser.parse_args()
@@ -143,6 +169,8 @@ def main():
     # return
     if args.mark:
         convert_markdown_file(fname, out_file, args.tag)
+    elif args.kindle:
+        convert_kindle_file(fname, out_file)
     else:
         convert_file(fname, out_file)
 
